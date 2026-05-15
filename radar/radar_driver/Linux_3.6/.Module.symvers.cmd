@@ -1,0 +1,1 @@
+savedcmd_/home/ubuntu/radar/radar_driver/Linux_3.6/Module.symvers :=  scripts/mod/modpost -M -m -a      -o /home/ubuntu/radar/radar_driver/Linux_3.6/Module.symvers -T /home/ubuntu/radar/radar_driver/Linux_3.6/modules.order -i Module.symvers -e 

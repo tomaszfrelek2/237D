@@ -1,0 +1,1 @@
+savedcmd_/home/ubuntu/radar/radar_driver/Linux_3.6/xr_usb_serial_common.ko := ld -r -EL  -maarch64elf -z noexecstack --no-warn-rwx-segments --build-id=sha1  -T scripts/module.lds -o /home/ubuntu/radar/radar_driver/Linux_3.6/xr_usb_serial_common.ko /home/ubuntu/radar/radar_driver/Linux_3.6/xr_usb_serial_common.o /home/ubuntu/radar/radar_driver/Linux_3.6/xr_usb_serial_common.mod.o

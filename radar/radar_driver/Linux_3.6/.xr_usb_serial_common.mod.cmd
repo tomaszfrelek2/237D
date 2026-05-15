@@ -1,0 +1,1 @@
+savedcmd_/home/ubuntu/radar/radar_driver/Linux_3.6/xr_usb_serial_common.mod := printf '%s\n'   xr_usb_serial_common.o | awk '!x[$$0]++ { print("/home/ubuntu/radar/radar_driver/Linux_3.6/"$$0) }' > /home/ubuntu/radar/radar_driver/Linux_3.6/xr_usb_serial_common.mod
