@@ -1,0 +1,5 @@
+  File "/home/ubuntu/ros2_ws/install/scooter_data/lib/python3.12/site-packages/scooter_data/camera.py", line 95
+    cap.release()
+    ^^^
+SyntaxError: expected 'except' or 'finally' block
+

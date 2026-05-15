@@ -1,0 +1,4 @@
+[console_scripts]
+bag_reader = scooter_data.bag_reader:main
+bag_recorder = scooter_data.bag_recorder:main
+camera = scooter_data.camera:main

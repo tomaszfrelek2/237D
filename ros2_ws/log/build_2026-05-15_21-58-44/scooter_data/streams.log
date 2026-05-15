@@ -1,0 +1,24 @@
+[1.233s] Invoking command in '/home/ubuntu/ros2_ws/src/scooter_data': PYTHONPATH=/home/ubuntu/ros2_ws/build/scooter_data/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/ubuntu/ros2_ws/install/scooter_data/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/scooter_data build --build-base /home/ubuntu/ros2_ws/build/scooter_data/build install --record /home/ubuntu/ros2_ws/build/scooter_data/install.log --single-version-externally-managed install_data
+[1.636s] running egg_info
+[1.665s] writing ../../build/scooter_data/scooter_data.egg-info/PKG-INFO
+[1.666s] writing dependency_links to ../../build/scooter_data/scooter_data.egg-info/dependency_links.txt
+[1.667s] writing entry points to ../../build/scooter_data/scooter_data.egg-info/entry_points.txt
+[1.667s] writing requirements to ../../build/scooter_data/scooter_data.egg-info/requires.txt
+[1.668s] writing top-level names to ../../build/scooter_data/scooter_data.egg-info/top_level.txt
+[1.728s] reading manifest file '../../build/scooter_data/scooter_data.egg-info/SOURCES.txt'
+[1.730s] adding license file 'LICENSE'
+[1.731s] writing manifest file '../../build/scooter_data/scooter_data.egg-info/SOURCES.txt'
+[1.732s] running build
+[1.733s] running build_py
+[1.734s] running install
+[1.738s] running install_lib
+[1.770s] running install_data
+[1.771s] copying package.xml -> /home/ubuntu/ros2_ws/install/scooter_data/share/scooter_data
+[1.772s] running install_egg_info
+[1.802s] removing '/home/ubuntu/ros2_ws/install/scooter_data/lib/python3.12/site-packages/scooter_data-0.0.0-py3.12.egg-info' (and everything under it)
+[1.803s] Copying ../../build/scooter_data/scooter_data.egg-info to /home/ubuntu/ros2_ws/install/scooter_data/lib/python3.12/site-packages/scooter_data-0.0.0-py3.12.egg-info
+[1.804s] running install_scripts
+[2.002s] Installing bag_recorder script to /home/ubuntu/ros2_ws/install/scooter_data/lib/scooter_data
+[2.003s] Installing camera script to /home/ubuntu/ros2_ws/install/scooter_data/lib/scooter_data
+[2.006s] writing list of installed files to '/home/ubuntu/ros2_ws/build/scooter_data/install.log'
+[2.062s] Invoked command in '/home/ubuntu/ros2_ws/src/scooter_data' returned '0': PYTHONPATH=/home/ubuntu/ros2_ws/build/scooter_data/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/ubuntu/ros2_ws/install/scooter_data/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/scooter_data build --build-base /home/ubuntu/ros2_ws/build/scooter_data/build install --record /home/ubuntu/ros2_ws/build/scooter_data/install.log --single-version-externally-managed install_data

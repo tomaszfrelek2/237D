@@ -1,0 +1,31 @@
+running egg_info
+creating ../../build/scooter_data/scooter_data.egg-info
+writing ../../build/scooter_data/scooter_data.egg-info/PKG-INFO
+writing dependency_links to ../../build/scooter_data/scooter_data.egg-info/dependency_links.txt
+writing requirements to ../../build/scooter_data/scooter_data.egg-info/requires.txt
+writing top-level names to ../../build/scooter_data/scooter_data.egg-info/top_level.txt
+writing manifest file '../../build/scooter_data/scooter_data.egg-info/SOURCES.txt'
+reading manifest file '../../build/scooter_data/scooter_data.egg-info/SOURCES.txt'
+adding license file 'LICENSE'
+writing manifest file '../../build/scooter_data/scooter_data.egg-info/SOURCES.txt'
+running build
+running build_py
+creating /home/ubuntu/ros2_ws/build/scooter_data/build
+creating /home/ubuntu/ros2_ws/build/scooter_data/build/lib
+creating /home/ubuntu/ros2_ws/build/scooter_data/build/lib/scooter_data
+copying scooter_data/__init__.py -> /home/ubuntu/ros2_ws/build/scooter_data/build/lib/scooter_data
+running install
+running install_lib
+creating /home/ubuntu/ros2_ws/install/scooter_data/lib/python3.12/site-packages/scooter_data
+copying /home/ubuntu/ros2_ws/build/scooter_data/build/lib/scooter_data/__init__.py -> /home/ubuntu/ros2_ws/install/scooter_data/lib/python3.12/site-packages/scooter_data
+byte-compiling /home/ubuntu/ros2_ws/install/scooter_data/lib/python3.12/site-packages/scooter_data/__init__.py to __init__.cpython-312.pyc
+running install_data
+creating /home/ubuntu/ros2_ws/install/scooter_data/share/ament_index
+creating /home/ubuntu/ros2_ws/install/scooter_data/share/ament_index/resource_index
+creating /home/ubuntu/ros2_ws/install/scooter_data/share/ament_index/resource_index/packages
+copying resource/scooter_data -> /home/ubuntu/ros2_ws/install/scooter_data/share/ament_index/resource_index/packages
+copying package.xml -> /home/ubuntu/ros2_ws/install/scooter_data/share/scooter_data
+running install_egg_info
+Copying ../../build/scooter_data/scooter_data.egg-info to /home/ubuntu/ros2_ws/install/scooter_data/lib/python3.12/site-packages/scooter_data-0.0.0-py3.12.egg-info
+running install_scripts
+writing list of installed files to '/home/ubuntu/ros2_ws/build/scooter_data/install.log'
