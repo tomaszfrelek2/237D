@@ -9,6 +9,8 @@
 
   <exec_depend>rclpy</exec_depend> 
   <exec_depend>sensor_msgs</exec_depend>
+  <exec_depend>std_msgs</exec_depend>
+  <exec_depend>radar_msgs</exec_depend>
   <exec_depend>cv_bridge</exec_depend>
   <depend>rosbag2_compression</depend>
   <depend>rosbag2_py</depend>

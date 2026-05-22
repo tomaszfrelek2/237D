@@ -99,7 +99,9 @@ def parse_packet(packet):
                     raw_y * raw_y +
                     raw_z * raw_z
                 )
-
+                
+                if point_range > 4.5 or point_range < .2:
+                    continue
                 # Scooter-friendly coordinate conversion
                 # raw_y = forward
                 # -raw_x = side
@@ -231,18 +233,6 @@ def main():
             print(f"Frame {frame_number} | points={len(radar_points)}")
 
             for point in radar_points:
-                print(
-                    f"  Point {point['id']} | "
-                    f"raw=({point['raw_x']:.2f}, {point['raw_y']:.2f}, {point['raw_z']:.2f}) m | "
-                    f"forward={point['forward']:.2f} m, "
-                    f"side={point['side']:.2f} m, "
-                    f"height={point['height']:.2f} m, "
-                    f"range={point['range']:.2f} m, "
-                    f"v={point['velocity']:.2f} m/s, "
-                    f"snr={point['snr']}, "
-                    f"noise={point['noise']}"
-                )
-
                 if SAVE_TO_CSV:
                     writer.writerow([
                         timestamp,
@@ -259,9 +249,6 @@ def main():
                         point["snr"],
                         point["noise"]
                     ])
-
-            if SAVE_TO_CSV:
-                csv_file.flush()
 
     except KeyboardInterrupt:
         print("\nStopped.")

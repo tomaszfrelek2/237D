@@ -27,6 +27,8 @@ setup(
             'camera = scooter_data.camera:main',
             'bag_recorder = scooter_data.bag_recorder:main',
             'bag_reader = scooter_data.bag_reader:main',
+            'radar = scooter_data.radar:main',
+            'servo = scooter_data.servo:main',
         ],
     },
 )

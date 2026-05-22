@@ -20,3 +20,4 @@
 /home/ubuntu/ros2_ws/install/scooter_data/lib/scooter_data/bag_reader
 /home/ubuntu/ros2_ws/install/scooter_data/lib/scooter_data/bag_recorder
 /home/ubuntu/ros2_ws/install/scooter_data/lib/scooter_data/camera
+/home/ubuntu/ros2_ws/install/scooter_data/lib/scooter_data/radar

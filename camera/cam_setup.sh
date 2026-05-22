@@ -10,4 +10,4 @@ curl -X GET "http://$GOPRO_IP:$GOPRO_PORT/gopro/camera/stream/start"
 echo ""
 echo ">>> GoPro stream should now be active on UDP port 8554."
 
-python3 cam_record.py
+# python3 cam_record.py

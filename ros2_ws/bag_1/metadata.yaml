@@ -1,0 +1,30 @@
+rosbag2_bagfile_information:
+  version: 9
+  storage_identifier: sqlite3
+  duration:
+    nanoseconds: 28870232209
+  starting_time:
+    nanoseconds_since_epoch: 1778884313089543744
+  message_count: 5
+  topics_with_message_count:
+    - topic_metadata:
+        name: video
+        type: sensor_msgs/msg/Image
+        serialization_format: cdr
+        offered_qos_profiles:
+          []
+        type_description_hash: ""
+      message_count: 5
+  compression_format: ""
+  compression_mode: ""
+  relative_file_paths:
+    - bag_1_0.db3
+  files:
+    - path: bag_1_0.db3
+      starting_time:
+        nanoseconds_since_epoch: 1778884313089543744
+      duration:
+        nanoseconds: 28870232209
+      message_count: 10
+  custom_data: ~
+  ros_distro: jazzy

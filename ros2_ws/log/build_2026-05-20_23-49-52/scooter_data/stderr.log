@@ -1,0 +1,5 @@
+  File "/home/ubuntu/ros2_ws/install/scooter_data/lib/python3.12/site-packages/scooter_data/radar.py", line 249
+    self.get_logger().info("
+                           ^
+SyntaxError: unterminated string literal (detected at line 249)
+
