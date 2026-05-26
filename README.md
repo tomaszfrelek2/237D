@@ -1,5 +1,7 @@
-# CSE237D - Embedded Systems Design Project (Spring 2026) - Autonomous Scooter Hardware Project 
-## Tomasz Frelek, Ryan Chon, Gayathri Rajesh
+# CSE237D - Embedded Systems Design Project (Spring 2026)
+## Autonomous Scooter Hardware Project
+
+**Tomasz Frelek** · **Ryan Chon** · **Gayathri Rajesh**
 
 ## Setting up the RUBIK Pi
 RUBIK Pi 3 is a powerful, affordable, and flexible Edge AI platform, powered by the Qualcomm Dragonwing™ QCS6490, delivering 12 TOPS of efficient on-device AI performance. More details about the specifications of the RUBIK Pi can be found at <a href="https://www.thundercomm.com/rubik-pi-3/en/docs/rubik-pi-3-user-manual/1.1.0/quick-start/">https://www.thundercomm.com/rubik-pi-3/en/docs/rubik-pi-3-user-manual/1.1.0/quick-start/</a>.
