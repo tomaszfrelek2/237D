@@ -30,12 +30,12 @@ from std_msgs.msg import Float32
 
 class BagRecorder(Node):
 
-    def __init__(self):
+    def __init__(self,bag_name):
         super().__init__('simple_bag_recorder')
         self.writer = rosbag2_py.SequentialWriter()
 
         storage_options = rosbag2_py.StorageOptions(
-            uri='bag_2',
+            uri=bag_name,
             storage_id='sqlite3')
         converter_options = rosbag2_py.ConverterOptions('', '')
         self.writer.open(storage_options, converter_options)
@@ -84,7 +84,7 @@ class BagRecorder(Node):
 def main(args=None):
     try:
         rclpy.init(args=args)
-        sbr = BagRecorder()
+        sbr = BagRecorder("test_bag")
         rclpy.spin(sbr)
     except (KeyboardInterrupt, ExternalShutdownException):
         pass

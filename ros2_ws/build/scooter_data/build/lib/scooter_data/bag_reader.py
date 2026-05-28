@@ -1,29 +1,45 @@
-# Copyright 2024 Sony Group Corporation.
-#
+# Copyright 2024
 # Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
 import sys
 
 import rclpy
 from rclpy.executors import ExternalShutdownException
 from rclpy.node import Node
+from rclpy.serialization import deserialize_message
 import rosbag2_py
-from sensor_msgs.msg import Image
 
+# Import all message types needed for deserialization and publishing
+from sensor_msgs.msg import Image, PointCloud2, JointState
+from radar_msgs.msg import RadarScan
+from std_msgs.msg import Float32
 
-class BagReader(Node):
+# Map topics to their respective message types
+TOPIC_TYPE_MAP = {
+    'video': Image,
+    '/radar/scan': RadarScan,
+    '/radar/points': PointCloud2,
+    '/servo/joint_states': JointState,
+    '/servo/temperature': Float32,
+    '/servo/voltage': Float32,
+    '/servo/current': Float32,
+}
+
+# Map topics to logical sensor names for console output
+SENSOR_MAP = {
+    'video': 'GoPro Camera',
+    '/radar/scan': 'TI mmWave Radar',
+    '/radar/points': 'TI mmWave Radar',
+    '/servo/joint_states': 'ST3025 Servo',
+    '/servo/temperature': 'ST3025 Servo',
+    '/servo/voltage': 'ST3025 Servo',
+    '/servo/current': 'ST3025 Servo',
+}
+
+class BagReaderPublisher(Node):
 
     def __init__(self, bag_filename):
-        super().__init__('bag_reader')
+        super().__init__('bag_reader_publisher')
+        
         self.reader = rosbag2_py.SequentialReader()
         storage_options = rosbag2_py.StorageOptions(
             uri=bag_filename,
@@ -31,23 +47,60 @@ class BagReader(Node):
         converter_options = rosbag2_py.ConverterOptions('', '')
         self.reader.open(storage_options, converter_options)
 
-        self.publisher = self.create_publisher(Image, 'video', 10)
+        # Dynamically create a publisher for every topic in our map
+        self.publishers_dict = {}
+        for topic, msg_type in TOPIC_TYPE_MAP.items():
+            self.publishers_dict[topic] = self.create_publisher(msg_type, topic, 10)
+            self.get_logger().info(f"Created publisher for {topic}")
+
+        # Timer to read and publish messages at 10Hz
         self.timer = self.create_timer(0.1, self.timer_callback)
 
+    def format_value(self, topic, msg):
+        """Formats the deserialized message to prevent console flooding."""
+        if topic == 'video':
+            return f"Frame ({msg.width}x{msg.height}, {msg.encoding})"
+        elif topic == '/radar/points':
+            return f"Cloud (width: {msg.width}, points: {msg.width * msg.height})"
+        elif topic == '/radar/scan':
+            return f"Scan ({len(msg.returns)} returns)"
+        elif topic == '/servo/joint_states':
+            return f"Pos: {msg.position[0]:.2f} rad | Vel: {msg.velocity[0]:.2f} rad/s | Load: {msg.effort[0]:.2f} Nm"
+        elif topic.startswith('/servo/'):
+            return f"{msg.data:.2f}"
+        return str(msg)
+
     def timer_callback(self):
-        while self.reader.has_next():
-            msg = self.reader.read_next()
-            if msg[0] != 'video':
-                continue
-            self.publisher.publish(msg[1])
-            self.get_logger().info('Publish serialized data to ' + msg[0])
-            break
+        if self.reader.has_next():
+            topic, data, timestamp = self.reader.read_next()
+            
+            # Only process topics we explicitly registered
+            if topic in TOPIC_TYPE_MAP:
+                msg_type = TOPIC_TYPE_MAP[topic]
+                sensor = SENSOR_MAP[topic]
+                
+                # 1. Convert binary data back to a Python ROS message object
+                deserialized_msg = deserialize_message(data, msg_type)
+                
+                # 2. Print the formatted value to the terminal
+                val_str = self.format_value(topic, deserialized_msg)
+                self.get_logger().info(f"[{sensor}] {topic} | {val_str}")
+                
+                # 3. Publish the valid Python object back to the ROS 2 network
+                self.publishers_dict[topic].publish(deserialized_msg)
+        else:
+            self.get_logger().info('End of bag file reached.')
+            self.timer.cancel()
 
 
 def main(args=None):
+    if len(sys.argv) < 2:
+        print("Usage: ros2 run scooter_data bag_reader <path_to_bag_file>")
+        return
+
     try:
         rclpy.init(args=args)
-        sbr = BagReader(sys.argv[1])
+        sbr = BagReaderPublisher(sys.argv[1])
         rclpy.spin(sbr)
     except (KeyboardInterrupt, ExternalShutdownException):
         pass

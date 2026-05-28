@@ -1,0 +1,47 @@
+running egg_info
+creating ../../build/scooter_data/scooter_data.egg-info
+writing ../../build/scooter_data/scooter_data.egg-info/PKG-INFO
+writing dependency_links to ../../build/scooter_data/scooter_data.egg-info/dependency_links.txt
+writing entry points to ../../build/scooter_data/scooter_data.egg-info/entry_points.txt
+writing requirements to ../../build/scooter_data/scooter_data.egg-info/requires.txt
+writing top-level names to ../../build/scooter_data/scooter_data.egg-info/top_level.txt
+writing manifest file '../../build/scooter_data/scooter_data.egg-info/SOURCES.txt'
+reading manifest file '../../build/scooter_data/scooter_data.egg-info/SOURCES.txt'
+adding license file 'LICENSE'
+writing manifest file '../../build/scooter_data/scooter_data.egg-info/SOURCES.txt'
+running build
+running build_py
+creating /home/ubuntu/237D/ros2_ws/build/scooter_data/build
+creating /home/ubuntu/237D/ros2_ws/build/scooter_data/build/lib
+creating /home/ubuntu/237D/ros2_ws/build/scooter_data/build/lib/scooter_data
+copying scooter_data/__init__.py -> /home/ubuntu/237D/ros2_ws/build/scooter_data/build/lib/scooter_data
+copying scooter_data/bag_recorder.py -> /home/ubuntu/237D/ros2_ws/build/scooter_data/build/lib/scooter_data
+copying scooter_data/controller.py -> /home/ubuntu/237D/ros2_ws/build/scooter_data/build/lib/scooter_data
+copying scooter_data/servo.py -> /home/ubuntu/237D/ros2_ws/build/scooter_data/build/lib/scooter_data
+copying scooter_data/bag_reader.py -> /home/ubuntu/237D/ros2_ws/build/scooter_data/build/lib/scooter_data
+copying scooter_data/camera.py -> /home/ubuntu/237D/ros2_ws/build/scooter_data/build/lib/scooter_data
+copying scooter_data/radar.py -> /home/ubuntu/237D/ros2_ws/build/scooter_data/build/lib/scooter_data
+running install
+running install_lib
+copying /home/ubuntu/237D/ros2_ws/build/scooter_data/build/lib/scooter_data/bag_recorder.py -> /home/ubuntu/237D/ros2_ws/install/scooter_data/lib/python3.12/site-packages/scooter_data
+copying /home/ubuntu/237D/ros2_ws/build/scooter_data/build/lib/scooter_data/controller.py -> /home/ubuntu/237D/ros2_ws/install/scooter_data/lib/python3.12/site-packages/scooter_data
+copying /home/ubuntu/237D/ros2_ws/build/scooter_data/build/lib/scooter_data/servo.py -> /home/ubuntu/237D/ros2_ws/install/scooter_data/lib/python3.12/site-packages/scooter_data
+copying /home/ubuntu/237D/ros2_ws/build/scooter_data/build/lib/scooter_data/bag_reader.py -> /home/ubuntu/237D/ros2_ws/install/scooter_data/lib/python3.12/site-packages/scooter_data
+copying /home/ubuntu/237D/ros2_ws/build/scooter_data/build/lib/scooter_data/radar.py -> /home/ubuntu/237D/ros2_ws/install/scooter_data/lib/python3.12/site-packages/scooter_data
+byte-compiling /home/ubuntu/237D/ros2_ws/install/scooter_data/lib/python3.12/site-packages/scooter_data/bag_recorder.py to bag_recorder.cpython-312.pyc
+byte-compiling /home/ubuntu/237D/ros2_ws/install/scooter_data/lib/python3.12/site-packages/scooter_data/controller.py to controller.cpython-312.pyc
+byte-compiling /home/ubuntu/237D/ros2_ws/install/scooter_data/lib/python3.12/site-packages/scooter_data/servo.py to servo.cpython-312.pyc
+byte-compiling /home/ubuntu/237D/ros2_ws/install/scooter_data/lib/python3.12/site-packages/scooter_data/bag_reader.py to bag_reader.cpython-312.pyc
+byte-compiling /home/ubuntu/237D/ros2_ws/install/scooter_data/lib/python3.12/site-packages/scooter_data/radar.py to radar.cpython-312.pyc
+running install_data
+copying package.xml -> /home/ubuntu/237D/ros2_ws/install/scooter_data/share/scooter_data
+running install_egg_info
+removing '/home/ubuntu/237D/ros2_ws/install/scooter_data/lib/python3.12/site-packages/scooter_data-0.0.0-py3.12.egg-info' (and everything under it)
+Copying ../../build/scooter_data/scooter_data.egg-info to /home/ubuntu/237D/ros2_ws/install/scooter_data/lib/python3.12/site-packages/scooter_data-0.0.0-py3.12.egg-info
+running install_scripts
+Installing bag_reader script to /home/ubuntu/237D/ros2_ws/install/scooter_data/lib/scooter_data
+Installing bag_recorder script to /home/ubuntu/237D/ros2_ws/install/scooter_data/lib/scooter_data
+Installing camera script to /home/ubuntu/237D/ros2_ws/install/scooter_data/lib/scooter_data
+Installing radar script to /home/ubuntu/237D/ros2_ws/install/scooter_data/lib/scooter_data
+Installing servo script to /home/ubuntu/237D/ros2_ws/install/scooter_data/lib/scooter_data
+writing list of installed files to '/home/ubuntu/237D/ros2_ws/build/scooter_data/install.log'

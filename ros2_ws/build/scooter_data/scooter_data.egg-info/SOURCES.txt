@@ -14,7 +14,9 @@ scooter_data/__init__.py
 scooter_data/bag_reader.py
 scooter_data/bag_recorder.py
 scooter_data/camera.py
+scooter_data/controller.py
 scooter_data/radar.py
+scooter_data/servo.py
 test/test_copyright.py
 test/test_flake8.py
 test/test_pep257.py

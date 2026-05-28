@@ -1,0 +1,49 @@
+[1.289s] Invoking command in '/home/ubuntu/237D/ros2_ws/src/scooter_data': PYTHONPATH=/home/ubuntu/237D/ros2_ws/build/scooter_data/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/ubuntu/237D/ros2_ws/install/scooter_data/lib/python3.12/site-packages: /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/scooter_data build --build-base /home/ubuntu/237D/ros2_ws/build/scooter_data/build install --record /home/ubuntu/237D/ros2_ws/build/scooter_data/install.log --single-version-externally-managed install_data
+[1.574s] running egg_info
+[1.575s] creating ../../build/scooter_data/scooter_data.egg-info
+[1.589s] writing ../../build/scooter_data/scooter_data.egg-info/PKG-INFO
+[1.590s] writing dependency_links to ../../build/scooter_data/scooter_data.egg-info/dependency_links.txt
+[1.590s] writing entry points to ../../build/scooter_data/scooter_data.egg-info/entry_points.txt
+[1.590s] writing requirements to ../../build/scooter_data/scooter_data.egg-info/requires.txt
+[1.590s] writing top-level names to ../../build/scooter_data/scooter_data.egg-info/top_level.txt
+[1.590s] writing manifest file '../../build/scooter_data/scooter_data.egg-info/SOURCES.txt'
+[1.626s] reading manifest file '../../build/scooter_data/scooter_data.egg-info/SOURCES.txt'
+[1.626s] adding license file 'LICENSE'
+[1.626s] writing manifest file '../../build/scooter_data/scooter_data.egg-info/SOURCES.txt'
+[1.626s] running build
+[1.626s] running build_py
+[1.627s] creating /home/ubuntu/237D/ros2_ws/build/scooter_data/build
+[1.627s] creating /home/ubuntu/237D/ros2_ws/build/scooter_data/build/lib
+[1.627s] creating /home/ubuntu/237D/ros2_ws/build/scooter_data/build/lib/scooter_data
+[1.628s] copying scooter_data/__init__.py -> /home/ubuntu/237D/ros2_ws/build/scooter_data/build/lib/scooter_data
+[1.628s] copying scooter_data/bag_recorder.py -> /home/ubuntu/237D/ros2_ws/build/scooter_data/build/lib/scooter_data
+[1.628s] copying scooter_data/controller.py -> /home/ubuntu/237D/ros2_ws/build/scooter_data/build/lib/scooter_data
+[1.628s] copying scooter_data/servo.py -> /home/ubuntu/237D/ros2_ws/build/scooter_data/build/lib/scooter_data
+[1.628s] copying scooter_data/bag_reader.py -> /home/ubuntu/237D/ros2_ws/build/scooter_data/build/lib/scooter_data
+[1.628s] copying scooter_data/camera.py -> /home/ubuntu/237D/ros2_ws/build/scooter_data/build/lib/scooter_data
+[1.629s] copying scooter_data/radar.py -> /home/ubuntu/237D/ros2_ws/build/scooter_data/build/lib/scooter_data
+[1.629s] running install
+[1.637s] running install_lib
+[1.654s] copying /home/ubuntu/237D/ros2_ws/build/scooter_data/build/lib/scooter_data/bag_recorder.py -> /home/ubuntu/237D/ros2_ws/install/scooter_data/lib/python3.12/site-packages/scooter_data
+[1.655s] copying /home/ubuntu/237D/ros2_ws/build/scooter_data/build/lib/scooter_data/controller.py -> /home/ubuntu/237D/ros2_ws/install/scooter_data/lib/python3.12/site-packages/scooter_data
+[1.655s] copying /home/ubuntu/237D/ros2_ws/build/scooter_data/build/lib/scooter_data/servo.py -> /home/ubuntu/237D/ros2_ws/install/scooter_data/lib/python3.12/site-packages/scooter_data
+[1.655s] copying /home/ubuntu/237D/ros2_ws/build/scooter_data/build/lib/scooter_data/bag_reader.py -> /home/ubuntu/237D/ros2_ws/install/scooter_data/lib/python3.12/site-packages/scooter_data
+[1.655s] copying /home/ubuntu/237D/ros2_ws/build/scooter_data/build/lib/scooter_data/radar.py -> /home/ubuntu/237D/ros2_ws/install/scooter_data/lib/python3.12/site-packages/scooter_data
+[1.656s] byte-compiling /home/ubuntu/237D/ros2_ws/install/scooter_data/lib/python3.12/site-packages/scooter_data/bag_recorder.py to bag_recorder.cpython-312.pyc
+[1.657s] byte-compiling /home/ubuntu/237D/ros2_ws/install/scooter_data/lib/python3.12/site-packages/scooter_data/controller.py to controller.cpython-312.pyc
+[1.659s] byte-compiling /home/ubuntu/237D/ros2_ws/install/scooter_data/lib/python3.12/site-packages/scooter_data/servo.py to servo.cpython-312.pyc
+[1.660s] byte-compiling /home/ubuntu/237D/ros2_ws/install/scooter_data/lib/python3.12/site-packages/scooter_data/bag_reader.py to bag_reader.cpython-312.pyc
+[1.661s] byte-compiling /home/ubuntu/237D/ros2_ws/install/scooter_data/lib/python3.12/site-packages/scooter_data/radar.py to radar.cpython-312.pyc
+[1.665s] running install_data
+[1.665s] copying package.xml -> /home/ubuntu/237D/ros2_ws/install/scooter_data/share/scooter_data
+[1.665s] running install_egg_info
+[1.684s] removing '/home/ubuntu/237D/ros2_ws/install/scooter_data/lib/python3.12/site-packages/scooter_data-0.0.0-py3.12.egg-info' (and everything under it)
+[1.684s] Copying ../../build/scooter_data/scooter_data.egg-info to /home/ubuntu/237D/ros2_ws/install/scooter_data/lib/python3.12/site-packages/scooter_data-0.0.0-py3.12.egg-info
+[1.685s] running install_scripts
+[1.819s] Installing bag_reader script to /home/ubuntu/237D/ros2_ws/install/scooter_data/lib/scooter_data
+[1.820s] Installing bag_recorder script to /home/ubuntu/237D/ros2_ws/install/scooter_data/lib/scooter_data
+[1.822s] Installing camera script to /home/ubuntu/237D/ros2_ws/install/scooter_data/lib/scooter_data
+[1.823s] Installing radar script to /home/ubuntu/237D/ros2_ws/install/scooter_data/lib/scooter_data
+[1.825s] Installing servo script to /home/ubuntu/237D/ros2_ws/install/scooter_data/lib/scooter_data
+[1.826s] writing list of installed files to '/home/ubuntu/237D/ros2_ws/build/scooter_data/install.log'
+[1.881s] Invoked command in '/home/ubuntu/237D/ros2_ws/src/scooter_data' returned '0': PYTHONPATH=/home/ubuntu/237D/ros2_ws/build/scooter_data/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/ubuntu/237D/ros2_ws/install/scooter_data/lib/python3.12/site-packages: /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/scooter_data build --build-base /home/ubuntu/237D/ros2_ws/build/scooter_data/build install --record /home/ubuntu/237D/ros2_ws/build/scooter_data/install.log --single-version-externally-managed install_data
