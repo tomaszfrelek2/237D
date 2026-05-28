@@ -1,18 +1,14 @@
+import os
 import time
-import rclpy
-from rclpy.node import Node
-import serial
 import struct
 import math
-import time
+import serial
+
+import rclpy
+from rclpy.node import Node
 from sensor_msgs.msg import PointCloud2, PointField
 from radar_msgs.msg import RadarScan, RadarReturn
 from std_msgs.msg import Header
-
-
-# Serial settings
-PORT = "/dev/ttyXRUSB1"      # Radar DATA port
-BAUD = 921600               # Default TI mmWave data baud rate
 
 # Packet settings
 MAGIC_WORD = b"\x02\x01\x04\x03\x06\x05\x08\x07"
@@ -21,7 +17,6 @@ HEADER_SIZE = 40
 TLV_DETECTED_POINTS = 1
 TLV_SIDE_INFO = 7
 
-#function to parse radar data
 def parse_packet(packet):
     """
     Parse one complete TI mmWave UART packet.
@@ -34,7 +29,6 @@ def parse_packet(packet):
         forward, side, height
         range, snr, noise
     """
-
     if len(packet) < HEADER_SIZE:
         return None, []
 
@@ -76,8 +70,6 @@ def parse_packet(packet):
         payload = packet[payload_start:payload_end]
 
         if tlv_type == TLV_DETECTED_POINTS:
-            # Each detected point is 16 bytes:
-            # float32 x, float32 y, float32 z, float32 velocity
             for i in range(num_points):
                 point_offset = i * 16
 
@@ -97,9 +89,6 @@ def parse_packet(packet):
                 )
 
                 # Scooter-friendly coordinate conversion
-                # raw_y = forward
-                # -raw_x = side
-                # raw_z = height
                 forward = raw_y
                 side = -raw_x
                 height = raw_z
@@ -119,8 +108,6 @@ def parse_packet(packet):
                 })
 
         elif tlv_type == TLV_SIDE_INFO:
-            # Each side-info entry is 4 bytes:
-            # uint16 snr, uint16 noise
             for i in range(num_points):
                 info_offset = i * 4
 
@@ -139,33 +126,74 @@ def parse_packet(packet):
 
     return frame_number, radar_points
 
+
 class MmWaveRadarNode(Node):
     def __init__(self):
         super().__init__("mmwave_radar")
 
-        # Parameters — overridable from CLI or launch file
-        self.declare_parameter("port", PORT)
-        self.declare_parameter("baud", BAUD)
+        # 1. Declare parameters using the custom udev symlinks
+        self.declare_parameter("config_port", "/dev/radar_config")
+        self.declare_parameter("data_port", "/dev/radar_data")
+        self.declare_parameter("baud", 921600)
         self.declare_parameter("frame_id", "radar_link")
+        self.declare_parameter("cfg_file", "/home/ubuntu/237D/radar/radar_driver/2000039 (TI) xwr1843aop firmware-v03_06_01_00-LTS-1/profile_3d_aop.cfg")
 
-        port = self.get_parameter("port").value
+        config_port = self.get_parameter("config_port").value
+        data_port = self.get_parameter("data_port").value
         baud = self.get_parameter("baud").value
         self.frame_id = self.get_parameter("frame_id").value
+        cfg_file = self.get_parameter("cfg_file").value
 
-        # Publishers
-        self.pub_scan  = self.create_publisher(RadarScan,   "/radar/scan",   10)
+        # 2. Configure the radar FIRST
+        self.configure_radar(config_port, cfg_file)
+
+        # 3. Open the high-speed data port AFTER configuration is complete
+        self.get_logger().info(f"Opening data port: {data_port} at {baud} baud")
+        self.pub_scan  = self.create_publisher(RadarScan, "/radar/scan", 10)
         self.pub_cloud = self.create_publisher(PointCloud2, "/radar/points", 10)
 
-        # Serial
-        self.ser = serial.Serial(port, baud, timeout=0.05)
+        self.ser = serial.Serial(data_port, baud, timeout=0.05)
         self.buffer = bytearray()
 
-        # Poll at 200 Hz — fast enough for 30 fps radar, light on CPU
         self.create_timer(0.005, self.read_serial)
-
-        self.get_logger().info(f"mmWave radar node started on {port} at {baud}")
         
-    #Serial Read
+    def configure_radar(self, config_port, cfg_file):
+        """Replaces the external bash script by sending the .cfg file over the config port."""
+        if not os.path.isfile(cfg_file):
+            self.get_logger().error(f"Config file not found: {cfg_file}")
+            raise FileNotFoundError(f"Missing config file at {cfg_file}")
+
+        self.get_logger().info(f"Opening config port: {config_port}")
+        
+        try:
+            # TI Config ports always operate at 115200
+            cfg_serial = serial.Serial(config_port, 115200, timeout=1)
+            
+            with open(cfg_file, 'r') as file:
+                lines = file.readlines()
+
+            for line in lines:
+                line = line.strip()
+                
+                if not line or line.startswith('%'):
+                    continue
+
+                self.get_logger().info(f"Sending config: {line}")
+                cfg_serial.write((line + '\r\n').encode('utf-8'))
+                time.sleep(0.05)
+                
+                while cfg_serial.in_waiting > 0:
+                    response = cfg_serial.readline().decode('utf-8', errors='ignore').strip()
+                    if response:
+                        self.get_logger().debug(f"Radar reply: {response}")
+
+            cfg_serial.close()
+            self.get_logger().info("Radar configuration sent successfully.")
+            
+        except serial.SerialException as e:
+            self.get_logger().error(f"Failed to communicate with config port: {e}")
+            raise
+
     def read_serial(self):
         data = self.ser.read(4096)
         if data:
@@ -207,7 +235,6 @@ class MmWaveRadarNode(Node):
             f"Frame {frame_number} | {len(radar_points)} points"
         )
         
-    #radar scan publisher
     def publish_scan(self, stamp, radar_points):
         msg = RadarScan()
         msg.header = Header(stamp=stamp, frame_id=self.frame_id)
@@ -246,15 +273,6 @@ class MmWaveRadarNode(Node):
                 float(p["snr"])   if p["snr"]   is not None else 0.0,
                 float(p["noise"]) if p["noise"] is not None else 0.0,
             )
-            self.get_logger().info(f"  Point {p['id']} | "
-                    f"raw=({p['raw_x']:.2f}, {p['raw_y']:.2f}, {p['raw_z']:.2f}) m | "
-                    f"forward={p['forward']:.2f} m, "
-                    f"side={p['side']:.2f} m, "
-                    f"height={p['height']:.2f} m, "
-                    f"range={p['range']:.2f} m, "
-                    f"v={p['velocity']:.2f} m/s, "
-                    f"snr={p['snr']}, "
-                    f"noise={p['noise']}")
 
         msg = PointCloud2()
         msg.header = Header(stamp=stamp, frame_id=self.frame_id)
@@ -272,6 +290,7 @@ class MmWaveRadarNode(Node):
     def destroy_node(self):
         self.ser.close()
 
+
 def main(args=None):
     rclpy.init(args=args)
     node = MmWaveRadarNode()
@@ -282,7 +301,6 @@ def main(args=None):
     finally:
         node.destroy_node()
         rclpy.shutdown()
-
 
 if __name__ == "__main__":
     main()

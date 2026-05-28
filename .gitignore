@@ -14,3 +14,4 @@ camera/bin/
 camera/include/
 camera/lib/
 camera/lib64/
+*__pycache__

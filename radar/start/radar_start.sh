@@ -2,7 +2,7 @@
 
 CONFIG_PORT="/dev/ttyXRUSB0"
 DATA_PORT="/dev/ttyXRUSB1"
-CFG_FILE="/home/ubuntu/radar/radar_driver/2000039 (TI) xwr1843aop firmware-v03_06_01_00-LTS-1/profile_3d_aop.cfg"
+CFG_FILE="/home/ubuntu/237D/radar/radar_driver/2000039 (TI) xwr1843aop firmware-v03_06_01_00-LTS-1/profile_3d_aop.cfg"
 
 echo "Waiting for radar ports..."
 
