@@ -299,8 +299,16 @@ def main(args=None):
     except KeyboardInterrupt:
         pass
     finally:
-        node.destroy_node()
-        rclpy.shutdown()
+        # 1. Safely destroy the node structure first
+        if 'node' in locals():
+            try:
+                node.destroy_node()
+            except Exception:
+                pass # Prevent logging failures from crashing the shutdown sequence
+                
+        # 2. ONLY call shutdown if ROS2 is still actively running
+        if rclpy.ok():
+            rclpy.shutdown()
 
 if __name__ == "__main__":
     main()
