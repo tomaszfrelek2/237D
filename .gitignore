@@ -14,4 +14,10 @@ camera/bin/
 camera/include/
 camera/lib/
 camera/lib64/
-*__pycache__
+**__pycache__**
+ros2_ws/build/*
+ros2_ws/log/*
+ros2_ws/demo*
+ros2_ws/exports*
+install/*
+demos/*
