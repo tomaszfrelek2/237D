@@ -17,11 +17,14 @@ import rosbag2_py
 from sensor_msgs.msg import CompressedImage, PointCloud2, JointState
 from radar_msgs.msg import RadarScan
 from sensor_msgs_py import point_cloud2 as pc2
+from vision_msgs.msg import Detection2DArray
 
 TOPIC_TYPE_MAP = {
     '/video/compressed': CompressedImage,
     '/radar/points': PointCloud2,
     '/servo/joint_states': JointState,
+    '/video/detections': Detection2DArray,
+    '/video/yolov26_image/compressed': CompressedImage
 }
 
 # --- Plot Settings ---
@@ -33,6 +36,99 @@ HEIGHT_MAX_M = 5.0
 FIXED_ELEVATION = 20
 FIXED_AZIMUTH = 0
 TARGET_FPS = 10.0
+
+#Detection Overlay Settings
+BOX_COLOR = (0, 255, 0)         # Green bounding boxes
+BOX_THICKNESS = 2
+FONT = cv2.FONT_HERSHEY_SIMPLEX
+FONT_SCALE = 0.55
+FONT_THICKNESS = 1
+LABEL_BG_COLOR = (0, 255, 0)
+LABEL_TEXT_COLOR = (0, 0, 0)
+CONF_THRESHOLD = 0.25           # Only draw detections above this confidence
+
+# Standard YOLO/COCO class names mapping
+COCO_CLASSES = {
+    0: 'person', 1: 'bicycle', 2: 'car', 3: 'motorcycle', 4: 'airplane', 5: 'bus', 
+    6: 'train', 7: 'truck', 8: 'boat', 9: 'traffic light', 10: 'fire hydrant', 
+    11: 'stop sign', 12: 'parking meter', 13: 'bench', 14: 'bird', 15: 'cat', 
+    16: 'dog', 17: 'horse', 18: 'sheep', 19: 'cow', 20: 'elephant', 21: 'bear', 
+    22: 'zebra', 23: 'giraffe', 24: 'backpack', 25: 'umbrella', 26: 'handbag', 
+    27: 'tie', 28: 'suitcase', 29: 'frisbee', 30: 'skis', 31: 'snowboard', 
+    32: 'sports ball', 33: 'kite', 34: 'baseball bat', 35: 'baseball glove', 
+    36: 'skateboard', 37: 'surfboard', 38: 'tennis racket', 39: 'bottle', 
+    40: 'wine glass', 41: 'cup', 42: 'fork', 43: 'knife', 44: 'spoon', 45: 'bowl', 
+    46: 'banana', 47: 'apple', 48: 'sandwich', 49: 'orange', 50: 'broccoli', 
+    51: 'carrot', 52: 'hot dog', 53: 'pizza', 54: 'donut', 55: 'cake', 56: 'chair', 
+    57: 'couch', 58: 'potted plant', 59: 'bed', 60: 'dining table', 61: 'toilet', 
+    62: 'tv', 63: 'laptop', 64: 'mouse', 65: 'remote', 66: 'keyboard', 67: 'cell phone', 
+    68: 'microwave', 69: 'oven', 70: 'toaster', 71: 'sink', 72: 'refrigerator', 
+    73: 'book', 74: 'clock', 75: 'vase', 76: 'scissors', 77: 'teddy bear', 
+    78: 'hair drier', 79: 'toothbrush'
+}
+
+def draw_detections(img, detections):
+    """
+    Overlays YOLO bounding boxes, class labels, and confidence scores
+    from a vision_msgs/Detection2DArray message onto a BGR image.
+ 
+    Detection2D structure:
+      - bbox: BoundingBox2D  (center.x, center.y, size_x, size_y)  — all in pixels
+      - results[0].hypothesis.class_id  (string label)
+      - results[0].hypothesis.score     (float confidence)
+    """
+    if detections is None:
+        return img
+ 
+    img_h, img_w = img.shape[:2]
+ 
+    for det in detections.detections:
+        if not det.results:
+            continue
+ 
+        hyp = det.results[0].hypothesis
+        class_id = hyp.class_id
+        score = hyp.score
+ 
+        if score < CONF_THRESHOLD:
+            continue
+ 
+        # BoundingBox2D uses center + size (pixels)
+        cx = det.bbox.center.position.x
+        cy = det.bbox.center.position.y
+        bw = det.bbox.size_x
+        bh = det.bbox.size_y
+ 
+        x1 = int(cx - bw / 2)
+        y1 = int(cy - bh / 2)
+        x2 = int(cx + bw / 2)
+        y2 = int(cy + bh / 2)
+ 
+        # Clamp to image bounds
+        x1, y1 = max(0, x1), max(0, y1)
+        x2, y2 = min(img_w - 1, x2), min(img_h - 1, y2)
+ 
+        # Draw bounding box
+        cv2.rectangle(img, (x1, y1), (x2, y2), BOX_COLOR, BOX_THICKNESS)
+ 
+        # Build label string: "person 0.91"
+        label = f"{COCO_CLASSES[int(class_id)]} {score:.2f}"
+ 
+        (lw, lh), baseline = cv2.getTextSize(label, FONT, FONT_SCALE, FONT_THICKNESS)
+        label_y = max(y1, lh + 4)
+ 
+        # Draw filled label background
+        cv2.rectangle(img,
+                      (x1, label_y - lh - baseline - 2),
+                      (x1 + lw, label_y),
+                      LABEL_BG_COLOR, cv2.FILLED)
+ 
+        # Draw label text
+        cv2.putText(img, label,
+                    (x1, label_y - baseline),
+                    FONT, FONT_SCALE, LABEL_TEXT_COLOR, FONT_THICKNESS, cv2.LINE_AA)
+ 
+    return img
 
 def fig_to_img(fig):
     """Converts a Matplotlib figure into a raw OpenCV BGR image array."""
@@ -116,13 +212,23 @@ def stitch_videos(output_dir):
     print(f"Stitching complete! Final video saved to: {out_path}")
 
 def main(args=None):
+    # Apply runtime args
+    global CONF_THRESHOLD
     parser = argparse.ArgumentParser(description="Generate synchronized animated videos from MCAP data.")
     parser.add_argument("bag_path", type=str, help="Path to the bag directory.")
     parser.add_argument("-o", "--output", type=str, default="exports", 
                         help="Directory to save the mp4s (default: ./exports)")
+    parser.add_argument("--yolo-topic", type=str, default="/video/detections",
+                        help="ROS topic name for YOLO Detection2DArray")
+    parser.add_argument("--conf", type=float, default=CONF_THRESHOLD,
+                        help=f"Minimum confidence threshold for drawing detections (default: {CONF_THRESHOLD})")
     
     parsed_args, _ = parser.parse_known_args(args=sys.argv[1:])
     os.makedirs(parsed_args.output, exist_ok=True)
+    
+    
+    CONF_THRESHOLD = parsed_args.conf
+    TOPIC_TYPE_MAP[parsed_args.yolo_topic] = Detection2DArray
 
     reader = rosbag2_py.SequentialReader()
     storage_options = rosbag2_py.StorageOptions(uri=parsed_args.bag_path, storage_id='mcap')
@@ -150,8 +256,12 @@ def main(args=None):
 
     print(f"Starting synchronized video generation from MCAP stream...")
     print(f"Exports will be saved to: {parsed_args.output}/")
+    print(f"YOLO detections topic: {parsed_args.yolo_topic}")
+    print(f"Confidence threshold:   {CONF_THRESHOLD}")
+
     
     msg_count = 0
+    det_count = 0
 
     while reader.has_next():
         topic, data, timestamp = reader.read_next()
@@ -171,8 +281,13 @@ def main(args=None):
             
         msg = deserialize_message(data, TOPIC_TYPE_MAP[topic])
 
+        if topic == parsed_args.yolo_topic:
+            latest_detections = msg
+            det_count += 1
+            continue
+        
         # --- 1. GoPro Video Processing ---
-        if topic == '/video/compressed':
+        if topic == '/video/yolov26_image/compressed':
             if expected_frame_idx < cam_frame_count:
                 continue # Skip processing if sensor is running ahead of the clock
                 
@@ -180,6 +295,7 @@ def main(args=None):
             img = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
             
             if img is not None:
+                img = draw_detections(img, latest_detections)
                 if cam_writer is None:
                     h, w = img.shape[:2]
                     cam_writer = cv2.VideoWriter(

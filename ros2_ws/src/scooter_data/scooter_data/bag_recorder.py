@@ -31,12 +31,17 @@ from radar_msgs.msg import RadarScan
 from sensor_msgs.msg import JointState
 from std_msgs.msg import Float32
 
+#YOLO Imports
+from vision_msgs.msg import Detection2DArray
+
 
 class BagRecorder(Node):
 
     def __init__(self, bag_name):
         super().__init__('simple_bag_recorder')
         self.writer = rosbag2_py.SequentialWriter()
+        
+        self.get_logger().info("Bag Recorder initialized. Opening bag file for writing...")
 
         # Upgraded to MCAP storage plugin
         storage_options = rosbag2_py.StorageOptions(
@@ -44,6 +49,8 @@ class BagRecorder(Node):
             storage_id='mcap')
         converter_options = rosbag2_py.ConverterOptions('', '')
         self.writer.open(storage_options, converter_options)
+        
+        self.get_logger().info("Writer opened successfully. Registering topics and creating publishers...")
         
         # 1. Register Topics
         self._register_topic(0, '/video/compressed', 'sensor_msgs/msg/CompressedImage')
@@ -54,6 +61,9 @@ class BagRecorder(Node):
         self._register_topic(4, '/servo/temperature', 'std_msgs/msg/Float32')
         self._register_topic(5, '/servo/voltage', 'std_msgs/msg/Float32')
         self._register_topic(6, '/servo/current', 'std_msgs/msg/Float32')
+        
+        self._register_topic(7, '/video/detections', 'vision_msgs/msg/Detection2DArray')
+        self._register_topic(8, '/video/yolov26_image/compressed', 'sensor_msgs/msg/CompressedImage')
 
         # 2. Create Subscriptions
         self.create_subscription(CompressedImage, '/video/compressed', self._make_callback('/video/compressed'), 10)
@@ -64,6 +74,11 @@ class BagRecorder(Node):
         self.create_subscription(Float32, '/servo/temperature', self._make_callback('/servo/temperature'), 10)
         self.create_subscription(Float32, '/servo/voltage', self._make_callback('/servo/voltage'), 10)
         self.create_subscription(Float32, '/servo/current', self._make_callback('/servo/current'), 10)
+        
+        self.create_subscription(Detection2DArray,'/video/detections', self._make_callback('/video/detections'), 10)
+        self.create_subscription(CompressedImage,'/video/yolov26_image/compressed', self._make_callback('/video/yolov26_image/compressed'), 10)
+        
+        self.get_logger().info("All topics registered and subscriptions created. Bag Recorder is now recording...")
         
     def _register_topic(self, id, name, type):
         topic_info = rosbag2_py.TopicMetadata(
