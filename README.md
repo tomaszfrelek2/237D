@@ -50,6 +50,8 @@ Currently, Ubuntu Jammy and Ubuntu Noble use NumPy 1.21 and 1.26 as their defaul
 ```bash
 pip install ultralytics "numpy<2"
 ```
+## Demo Videos
+The demo videos can be found in `/demo1_export/`, `/demo2_export` and `/fah_export`
 
 ## Hardware Specifications
 - Camera: GoPro Max2 
