@@ -40,6 +40,12 @@ To activate this environment
 source cam_env/bin/activate
 ```
 
+Installing the necessary Python Packages
+Currently, Ubuntu Jammy and Ubuntu Noble use NumPy 1.21 and 1.26 as their default binary versions. To avoid issues, ensure NumPy <2.0 is installed. 
+```bash
+pip install ultralytics "numpy<2"
+```
+
 ## Hardware Specifications
 - Camera: GoPro Max2 
 - Radar: DesignCore mmWave radar
