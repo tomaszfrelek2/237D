@@ -2,7 +2,7 @@
 ## Autonomous Scooter Hardware Project
 **Tomasz Frelek** · **Ryan Chon** · **Gayathri Rajesh**
 
-![Description](scooter.png)
+<img src="scooter.png" width="300" height="300">
 This project focuses on developing a modular hardware platform for a data-collection scooter, distributing the workload across three distinct subsystems: the radar, the camera, and the steering mechanism. All sensors and physical inputs are designed to route directly to a central Rubik Pi processor to ensure stable and reliable data logging. 
 
 ## Mechanical Design
