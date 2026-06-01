@@ -1,7 +1,12 @@
 # CSE237D - Embedded Systems Design Project (Spring 2026)
 ## Autonomous Scooter Hardware Project
-
 **Tomasz Frelek** · **Ryan Chon** · **Gayathri Rajesh**
+
+![Description](scooter.png)
+This project focuses on developing a modular hardware platform for a data-collection scooter, distributing the workload across three distinct subsystems: the radar, the camera, and the steering mechanism. All sensors and physical inputs are designed to route directly to a central Rubik Pi processor to ensure stable and reliable data logging. 
+
+## Mechanical Design
+The CAD designs for the mounts for the radar, Pi and the steering system can be found in the `/cad_design` folder.
 
 ## Setting up the RUBIK Pi
 RUBIK Pi 3 is a powerful, affordable, and flexible Edge AI platform, powered by the Qualcomm Dragonwing™ QCS6490, delivering 12 TOPS of efficient on-device AI performance. More details about the specifications of the RUBIK Pi can be found at <a href="https://www.thundercomm.com/rubik-pi-3/en/docs/rubik-pi-3-user-manual/1.1.0/quick-start/">https://www.thundercomm.com/rubik-pi-3/en/docs/rubik-pi-3-user-manual/1.1.0/quick-start/</a>.
