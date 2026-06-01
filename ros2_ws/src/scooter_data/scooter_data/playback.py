@@ -71,11 +71,6 @@ def draw_detections(img, detections):
     """
     Overlays YOLO bounding boxes, class labels, and confidence scores
     from a vision_msgs/Detection2DArray message onto a BGR image.
- 
-    Detection2D structure:
-      - bbox: BoundingBox2D  (center.x, center.y, size_x, size_y)  — all in pixels
-      - results[0].hypothesis.class_id  (string label)
-      - results[0].hypothesis.score     (float confidence)
     """
     if detections is None:
         return img
@@ -93,7 +88,6 @@ def draw_detections(img, detections):
         if score < CONF_THRESHOLD:
             continue
  
-        # BoundingBox2D uses center + size (pixels)
         cx = det.bbox.center.position.x
         cy = det.bbox.center.position.y
         bw = det.bbox.size_x
@@ -104,26 +98,21 @@ def draw_detections(img, detections):
         x2 = int(cx + bw / 2)
         y2 = int(cy + bh / 2)
  
-        # Clamp to image bounds
         x1, y1 = max(0, x1), max(0, y1)
         x2, y2 = min(img_w - 1, x2), min(img_h - 1, y2)
  
-        # Draw bounding box
         cv2.rectangle(img, (x1, y1), (x2, y2), BOX_COLOR, BOX_THICKNESS)
  
-        # Build label string: "person 0.91"
         label = f"{COCO_CLASSES[int(class_id)]} {score:.2f}"
  
         (lw, lh), baseline = cv2.getTextSize(label, FONT, FONT_SCALE, FONT_THICKNESS)
         label_y = max(y1, lh + 4)
  
-        # Draw filled label background
         cv2.rectangle(img,
                       (x1, label_y - lh - baseline - 2),
                       (x1 + lw, label_y),
                       LABEL_BG_COLOR, cv2.FILLED)
  
-        # Draw label text
         cv2.putText(img, label,
                     (x1, label_y - baseline),
                     FONT, FONT_SCALE, LABEL_TEXT_COLOR, FONT_THICKNESS, cv2.LINE_AA)
@@ -138,7 +127,8 @@ def fig_to_img(fig):
     return cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
 
 def stitch_videos(output_dir):
-    """Post-processes the synchronized MP4s into a single dashboard view."""
+    """Post-processes the synchronized MP4s into a single 2x2 dashboard view."""
+    raw_cam_path = os.path.join(output_dir, "raw_camera_export.mp4")
     cam_path = os.path.join(output_dir, "camera_export.mp4")
     radar_path = os.path.join(output_dir, "radar_export.mp4")
     servo_path = os.path.join(output_dir, "servo_export.mp4")
@@ -146,13 +136,13 @@ def stitch_videos(output_dir):
 
     print("\nStitching final dashboard video... Please wait.")
 
-    # Open the synchronized videos
+    raw_cam_cap = cv2.VideoCapture(raw_cam_path)
     cam_cap = cv2.VideoCapture(cam_path)
     radar_cap = cv2.VideoCapture(radar_path)
     servo_cap = cv2.VideoCapture(servo_path)
 
-    if not cam_cap.isOpened():
-        print("Error: Could not open camera video for stitching.")
+    if not cam_cap.isOpened() or not raw_cam_cap.isOpened():
+        print("Error: Could not open camera videos for stitching.")
         return
 
     # Use the camera's resolution as the baseline reference
@@ -160,12 +150,9 @@ def stitch_videos(output_dir):
     h = int(cam_cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
     fps = cam_cap.get(cv2.CAP_PROP_FPS)
 
-    # Master Canvas Size: 2x Width (Left/Right), 1x Height
+    # Master Canvas Size: 2x Width, 2x Height (2x2 Grid)
     canvas_w = w * 2
-    canvas_h = h
-    
-    # Calculate quadrant heights
-    half_h = h // 2
+    canvas_h = h * 2
 
     writer = cv2.VideoWriter(
         out_path, 
@@ -175,35 +162,43 @@ def stitch_videos(output_dir):
     )
 
     while True:
+        ret_rc, frame_rc = raw_cam_cap.read()
         ret_c, frame_c = cam_cap.read()
         ret_r, frame_r = radar_cap.read()
         ret_s, frame_s = servo_cap.read()
 
-        # Camera is our master timeline
+        # Detection Camera is our master timeline
         if not ret_c:
             break
 
         # Fallbacks in case of fractional frame differences
-        if not ret_r: frame_r = np.zeros((half_h, w, 3), dtype=np.uint8)
-        else: frame_r = cv2.resize(frame_r, (w, h - half_h))
+        if not ret_rc: frame_rc = np.zeros((h, w, 3), dtype=np.uint8)
+        else: frame_rc = cv2.resize(frame_rc, (w, h))
 
-        if not ret_s: frame_s = np.zeros((half_h, w, 3), dtype=np.uint8)
-        else: frame_s = cv2.resize(frame_s, (w, half_h))
+        if not ret_r: frame_r = np.zeros((h, w, 3), dtype=np.uint8)
+        else: frame_r = cv2.resize(frame_r, (w, h))
+
+        if not ret_s: frame_s = np.zeros((h, w, 3), dtype=np.uint8)
+        else: frame_s = cv2.resize(frame_s, (w, h))
 
         # 1. Create a blank black canvas
         canvas = np.zeros((canvas_h, canvas_w, 3), dtype=np.uint8)
         
-        # 2. Left Half (Full Height): Camera
-        canvas[:, :w] = frame_c
+        # 2. Top Left: Raw Camera
+        canvas[:h, :w] = frame_rc
         
-        # 3. Top Right Quarter: Servo Graph
-        canvas[:half_h, w:] = frame_s
+        # 3. Bottom Left: YOLO Camera
+        canvas[h:, :w] = frame_c
         
-        # 4. Bottom Right Quarter: Radar Point Cloud
-        canvas[half_h:, w:] = frame_r
+        # 4. Top Right: Servo Graph
+        canvas[:h, w:] = frame_s
+
+        # 5. Bottom Right: Radar Point Cloud
+        canvas[h:, w:] = frame_r
 
         writer.write(canvas)
 
+    raw_cam_cap.release()
     cam_cap.release()
     radar_cap.release()
     servo_cap.release()
@@ -226,7 +221,6 @@ def main(args=None):
     parsed_args, _ = parser.parse_known_args(args=sys.argv[1:])
     os.makedirs(parsed_args.output, exist_ok=True)
     
-    
     CONF_THRESHOLD = parsed_args.conf
     TOPIC_TYPE_MAP[parsed_args.yolo_topic] = Detection2DArray
 
@@ -240,11 +234,11 @@ def main(args=None):
     servo_times, servo_positions = [], []
     
     # Sync Engine Variables
-    cam_frame_count, radar_frame_count, servo_frame_count = 0, 0, 0
-    last_cam_img, last_radar_img, last_servo_img = None, None, None
+    raw_cam_frame_count, cam_frame_count, radar_frame_count, servo_frame_count = 0, 0, 0, 0
+    last_raw_cam_img, last_cam_img, last_radar_img, last_servo_img = None, None, None, None
     
     # Video Writers
-    cam_writer, radar_writer, servo_writer = None, None, None
+    raw_cam_writer, cam_writer, radar_writer, servo_writer = None, None, None, None
     
     # Setup Matplotlib Figures
     radar_fig = plt.figure(figsize=(9, 8))
@@ -259,9 +253,9 @@ def main(args=None):
     print(f"YOLO detections topic: {parsed_args.yolo_topic}")
     print(f"Confidence threshold:   {CONF_THRESHOLD}")
 
-    
     msg_count = 0
     det_count = 0
+    latest_detections = None
 
     while reader.has_next():
         topic, data, timestamp = reader.read_next()
@@ -281,16 +275,39 @@ def main(args=None):
             
         msg = deserialize_message(data, TOPIC_TYPE_MAP[topic])
 
-        # latest_detections = None
         if topic == parsed_args.yolo_topic:
             latest_detections = msg
             det_count += 1
             continue
         
-        # --- 1. GoPro Video Processing ---
-        if topic == '/video/yolov26_image/compressed':
+        # --- 1. Raw Video Processing ---
+        if topic == '/video/compressed':
+            if expected_frame_idx < raw_cam_frame_count:
+                continue
+                
+            np_arr = np.array(msg.data, dtype=np.uint8)
+            img = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
+            
+            if img is not None:
+                if raw_cam_writer is None:
+                    h, w = img.shape[:2]
+                    raw_cam_writer = cv2.VideoWriter(
+                        os.path.join(parsed_args.output, "raw_camera_export.mp4"), 
+                        cv2.VideoWriter_fourcc(*'mp4v'), TARGET_FPS, (w, h))
+                
+                while raw_cam_frame_count < expected_frame_idx:
+                    if last_raw_cam_img is not None:
+                        raw_cam_writer.write(last_raw_cam_img)
+                    raw_cam_frame_count += 1
+                    
+                raw_cam_writer.write(img)
+                last_raw_cam_img = img
+                raw_cam_frame_count += 1
+
+        # --- 2. YOLO Video Processing ---
+        elif topic == '/video/yolov26_image/compressed':
             if expected_frame_idx < cam_frame_count:
-                continue # Skip processing if sensor is running ahead of the clock
+                continue 
                 
             np_arr = np.array(msg.data, dtype=np.uint8)
             img = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
@@ -304,7 +321,6 @@ def main(args=None):
                         os.path.join(parsed_args.output, "camera_export.mp4"), 
                         cv2.VideoWriter_fourcc(*'mp4v'), TARGET_FPS, (w, h))
                 
-                # Padding Engine: Fill gap if packets were dropped
                 while cam_frame_count < expected_frame_idx:
                     if last_cam_img is not None:
                         cam_writer.write(last_cam_img)
@@ -314,7 +330,7 @@ def main(args=None):
                 last_cam_img = img
                 cam_frame_count += 1
                 
-        # --- 2. 3D Radar Processing ---
+        # --- 3. 3D Radar Processing ---
         elif topic == '/radar/points':
             if expected_frame_idx < radar_frame_count:
                 continue
@@ -324,9 +340,9 @@ def main(args=None):
             
             radar_ax.cla()
             if len(frame_points) > 0:
-                xs = frame_points[:, 1]  # Plot X-Axis = Side
-                ys = frame_points[:, 0]  # Plot Y-Axis = Forward
-                zs = frame_points[:, 2]  # Plot Z-Axis = Height
+                xs = frame_points[:, 1]  
+                ys = frame_points[:, 0]  
+                zs = frame_points[:, 2]  
                 radar_ax.scatter(xs, ys, zs, s=25, alpha=0.75, color='royalblue')
 
             radar_ax.scatter([0], [0], [0], s=100, marker="^", color='red')
@@ -349,7 +365,6 @@ def main(args=None):
                     os.path.join(parsed_args.output, "radar_export.mp4"), 
                     cv2.VideoWriter_fourcc(*'mp4v'), TARGET_FPS, (rw, rh))
             
-            # Padding Engine
             while radar_frame_count < expected_frame_idx:
                 if last_radar_img is not None:
                     radar_writer.write(last_radar_img)
@@ -359,13 +374,13 @@ def main(args=None):
             last_radar_img = r_img
             radar_frame_count += 1
 
+        # --- 4. Servo Plot Processing ---
         elif topic == '/servo/joint_states':
             if len(msg.position) > 0:
-                # Apply modulo 2*pi (approx 6.283) to keep values in [0, 2pi)
                 pos_mod = msg.position[0] % (2.0 * np.pi)
                 
                 servo_times.append(relative_time_sec)
-                servo_positions.append(pos_mod) # Appending the wrapped value
+                servo_positions.append(pos_mod)
                 
                 if expected_frame_idx < servo_frame_count:
                     continue 
@@ -377,8 +392,6 @@ def main(args=None):
                 servo_ax.set_ylabel("Angle (rad)")
                 
                 servo_ax.set_xlim(0, max(5.0, relative_time_sec + 1.0))
-                
-                # Modulo ensures range is always [0, 6.28]
                 servo_ax.set_ylim(-0.5, 7.0) 
                 servo_ax.grid(True)
                 
@@ -389,7 +402,6 @@ def main(args=None):
                         os.path.join(parsed_args.output, "servo_export.mp4"), 
                         cv2.VideoWriter_fourcc(*'mp4v'), TARGET_FPS, (sw, sh))
                         
-                # Padding Engine
                 while servo_frame_count < expected_frame_idx:
                     if last_servo_img is not None:
                         servo_writer.write(last_servo_img)
@@ -400,6 +412,7 @@ def main(args=None):
                 servo_frame_count += 1
 
     # Clean up
+    if raw_cam_writer: raw_cam_writer.release()
     if cam_writer: cam_writer.release()
     if radar_writer: radar_writer.release()
     if servo_writer: servo_writer.release()
@@ -409,10 +422,12 @@ def main(args=None):
     
     print("\nVideo generation complete!")
     print(f"Final Synchronized Frame Counts:")
-    print(f"  Camera: {cam_frame_count} frames")
-    print(f"  Radar:  {radar_frame_count} frames")
-    print(f"  Servo:  {servo_frame_count} frames")
+    print(f"  Raw Camera: {raw_cam_frame_count} frames")
+    print(f"  Camera:     {cam_frame_count} frames")
+    print(f"  Radar:      {radar_frame_count} frames")
+    print(f"  Servo:      {servo_frame_count} frames")
 
     stitch_videos(parsed_args.output)
+
 if __name__ == '__main__':
     main()
