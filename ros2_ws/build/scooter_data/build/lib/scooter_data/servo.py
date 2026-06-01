@@ -8,7 +8,7 @@ from sensor_msgs.msg import JointState
 from std_msgs.msg import Float32
 
 # Import the class you provided
-from controller import ST3025_Controller
+from scooter_data.controller import ST3025_Controller
 
 class ServoStatePublisher(Node):
     def __init__(self):
@@ -18,7 +18,7 @@ class ServoStatePublisher(Node):
         self.declare_parameter('port', '/dev/serial/by-id/usb-1a86_USB_Single_Serial_5B14110532-if00')
         self.declare_parameter('baudrate', 1000000)
         self.declare_parameter('servo_id', 1)
-        self.declare_parameter('enable_torque', True)
+        self.declare_parameter('enable_torque', False)
         self.declare_parameter('poll_interval', 0.1)
 
         # 2. Hardware Math Parameters
@@ -118,9 +118,15 @@ def main(args=None):
     except (KeyboardInterrupt, ExternalShutdownException):
         pass
     finally:
+        # 1. Safely destroy the node structure first
         if 'node' in locals():
-            node.destroy_node()
-        rclpy.shutdown()
-
+            try:
+                node.destroy_node()
+            except Exception:
+                pass # Prevent logging failures from crashing the shutdown sequence
+                
+        # 2. ONLY call shutdown if ROS2 is still actively running
+        if rclpy.ok():
+            rclpy.shutdown()
 if __name__ == '__main__':
     main()

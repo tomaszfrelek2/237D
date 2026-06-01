@@ -21,7 +21,7 @@ class CameraYOLO26Node(Node):
     def __init__(self):
         super().__init__('camera_yolo26_node')
         
-        self.model_name = "yolo26l.pt"
+        self.model_name = "yolo26n.pt"
         self.output_image = True
         self.color = (0, 255, 0)
         self.thickness = 2

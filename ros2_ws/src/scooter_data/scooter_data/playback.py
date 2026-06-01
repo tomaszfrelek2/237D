@@ -281,6 +281,7 @@ def main(args=None):
             
         msg = deserialize_message(data, TOPIC_TYPE_MAP[topic])
 
+        # latest_detections = None
         if topic == parsed_args.yolo_topic:
             latest_detections = msg
             det_count += 1
@@ -295,7 +296,8 @@ def main(args=None):
             img = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
             
             if img is not None:
-                img = draw_detections(img, latest_detections)
+                if latest_detections is not None:
+                    img = draw_detections(img, latest_detections)
                 if cam_writer is None:
                     h, w = img.shape[:2]
                     cam_writer = cv2.VideoWriter(

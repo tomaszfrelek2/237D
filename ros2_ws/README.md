@@ -81,6 +81,16 @@ Start the steering node using
 ros2 run scooter_data servo
 ```
 
+Start the YOLO node using 
+```bash
+ros2 run scooter_data camera_yolov26_node
+```
+
+Alternatively, you can start all the nodes together using the launch file
+```bash
+ros2 launch scooter_data scooterdata_launch.py
+```
+
 Use `ros2 topic list` to see the `/topics` that are being published the nodes. Run `ros2 run scooter_data bag_recorder` to record the data using ROS2 Bag. ROS2 Bag is a tool for recording and playback of topics published by a ROS2 Node.
 
 To visualise the saved data, run `python3 playback.py --"/path_to_bag" --o "/save_directory"

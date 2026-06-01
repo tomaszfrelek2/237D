@@ -8,7 +8,7 @@ from ultralytics import YOLO
 
 
 class YOLODetector():
-    def __init__(self, model_name="yolo26l.pt"):
+    def __init__(self, model_name="yolo26n.pt"):
         """ Models:
 Model	Size (px)	mAP@0.5:0.95   mAP@0.5:0.95 (e2e)	Speed (ONNX)   Speed (TensorRT)    Params (M)	FLOPs (B)	
 YOLO26n	  640	        40.9	         40.1	          38.9 ± 0.7	   1.7 ± 0.0	     2.4	       5.4

@@ -1,0 +1,78 @@
+rosbag2_bagfile_information:
+  version: 9
+  storage_identifier: mcap
+  duration:
+    nanoseconds: 26363179614
+  starting_time:
+    nanoseconds_since_epoch: 1780020954434230923
+  message_count: 1855
+  topics_with_message_count:
+    - topic_metadata:
+        name: /servo/current
+        type: std_msgs/msg/Float32
+        serialization_format: cdr
+        offered_qos_profiles:
+          []
+        type_description_hash: ""
+      message_count: 265
+    - topic_metadata:
+        name: /servo/voltage
+        type: std_msgs/msg/Float32
+        serialization_format: cdr
+        offered_qos_profiles:
+          []
+        type_description_hash: ""
+      message_count: 265
+    - topic_metadata:
+        name: /servo/temperature
+        type: std_msgs/msg/Float32
+        serialization_format: cdr
+        offered_qos_profiles:
+          []
+        type_description_hash: ""
+      message_count: 265
+    - topic_metadata:
+        name: /servo/joint_states
+        type: sensor_msgs/msg/JointState
+        serialization_format: cdr
+        offered_qos_profiles:
+          []
+        type_description_hash: ""
+      message_count: 265
+    - topic_metadata:
+        name: /radar/points
+        type: sensor_msgs/msg/PointCloud2
+        serialization_format: cdr
+        offered_qos_profiles:
+          []
+        type_description_hash: ""
+      message_count: 265
+    - topic_metadata:
+        name: /radar/scan
+        type: radar_msgs/msg/RadarScan
+        serialization_format: cdr
+        offered_qos_profiles:
+          []
+        type_description_hash: ""
+      message_count: 265
+    - topic_metadata:
+        name: /video/compressed
+        type: sensor_msgs/msg/CompressedImage
+        serialization_format: cdr
+        offered_qos_profiles:
+          []
+        type_description_hash: ""
+      message_count: 265
+  compression_format: ""
+  compression_mode: ""
+  relative_file_paths:
+    - final_demo_0.mcap
+  files:
+    - path: final_demo_0.mcap
+      starting_time:
+        nanoseconds_since_epoch: 1780020954434230923
+      duration:
+        nanoseconds: 26363179614
+      message_count: 3710
+  custom_data: ~
+  ros_distro: jazzy
