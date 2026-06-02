@@ -14,6 +14,9 @@ This project focuses on developing a modular hardware platform for a data-collec
 
 `servo` contains controller and code for setting up, connecting, and running the ST3025 servo motor. More info can be found in the servo motor's readme.
 
+`demo1_export`, `demo2_export`, and `fah_export` contain demos of our project.
+
+`ros2_ws` contains the code for the ros2 workspace, and is the intended way of running the system. More info can be found in the folder's readme.
 
 
 
