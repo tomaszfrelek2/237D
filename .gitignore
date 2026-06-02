@@ -21,3 +21,5 @@ ros2_ws/demo*
 ros2_ws/exports*
 install/*
 demos/*
+ros2_ws/yolo26l.pt
+ros2_ws/yolo26n.pt
