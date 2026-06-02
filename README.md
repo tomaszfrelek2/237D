@@ -5,6 +5,19 @@
 <img src="scooter.png" width="300" height="300">
 This project focuses on developing a modular hardware platform for a data-collection scooter, distributing the workload across three distinct subsystems: the radar, the camera, and the steering mechanism. All sensors and physical inputs are designed to route directly to a central Rubik Pi processor to ensure stable and reliable data logging. 
 
+## Oragnization
+`cad design` contains the raw stl files used to 3d print all components
+
+`camera` contains code for setting up, connecting, and running the GOPRO MAX2 camera. More info can be found in the camera folder's readme.
+
+`radar` contains code and configs for setting up, connecting, and running the TI radar. More info can be found in the radar folder's readme.
+
+`servo` contains controller and code for setting up, connecting, and running the ST3025 servo motor. More info can be found in the servo motor's readme.
+
+
+
+
+
 ## Mechanical Design
 The CAD designs for the mounts for the radar, Pi and the steering system can be found in the `/cad_design` folder.
 
@@ -50,8 +63,7 @@ Currently, Ubuntu Jammy and Ubuntu Noble use NumPy 1.21 and 1.26 as their defaul
 ```bash
 pip install ultralytics "numpy<2"
 ```
-## Demo Videos
-The demo videos can be found in `/demo1_export/`, `/demo2_export` and `/fah_export`
+
 
 ## Hardware Specifications
 - Camera: GoPro Max2 
