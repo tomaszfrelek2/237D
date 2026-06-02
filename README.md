@@ -19,11 +19,6 @@ This project focuses on developing a modular hardware platform for a data-collec
 `ros2_ws` contains the code for the ros2 workspace, and is the intended way of running the system. More info can be found in the folder's readme.
 
 
-
-
-## Mechanical Design
-The CAD designs for the mounts for the radar, Pi and the steering system can be found in the `/cad_design` folder.
-
 ## Setting up the RUBIK Pi
 RUBIK Pi 3 is a powerful, affordable, and flexible Edge AI platform, powered by the Qualcomm Dragonwing™ QCS6490, delivering 12 TOPS of efficient on-device AI performance. More details about the specifications of the RUBIK Pi can be found at <a href="https://www.thundercomm.com/rubik-pi-3/en/docs/rubik-pi-3-user-manual/1.1.0/quick-start/">https://www.thundercomm.com/rubik-pi-3/en/docs/rubik-pi-3-user-manual/1.1.0/quick-start/</a>.
 
