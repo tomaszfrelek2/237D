@@ -64,14 +64,6 @@ Install Python dependencies if needed:
 pip install pyserial numpy pandas matplotlib
 ```
 
-If `pip` is blocked because of the system Python environment, use a virtual environment:
-
-```bash
-python3 -m venv venv
-source venv/bin/activate
-pip install pyserial numpy pandas matplotlib
-```
-
 ---
 
 ## Radar Setup Procedure
@@ -80,11 +72,6 @@ pip install pyserial numpy pandas matplotlib
 
 Plug the radar into the RubikPi using USB.
 
-Check that the device is detected:
-
-```bash
-lsusb
-```
 
 ---
 
@@ -92,8 +79,13 @@ lsusb
 
 The radar requires the XR USB serial driver so it can appear as serial devices on the RubikPi.
 
-If the driver is not already loaded automatically, load it with:
+If the driver has already been installed as a system module, load it with:
 
+```bash
+sudo modprobe xr_usb_serial_common
+```
+
+If loading the driver manually from the driver directory, use:
 ```bash
 sudo modprobe xr_usb_serial_common
 ```
@@ -128,8 +120,10 @@ It does the following:
 - Checks that the radar configuration file exists
 - Sets the serial speeds for both ports
 - Sends the radar configuration file to the radar
-- 
+  
+
 After the config file is sent, the radar streams binary data from:
+
 /dev/ttyXRUSB1
 
 ## 4. Read the Raw Radar Stream
@@ -237,19 +231,11 @@ height  = vertical offset
 range   = total distance from the radar
 ```
 
-Example output:
-
-```text
-Frame 120 | points=3
-
-Point 0 | raw=(0.42, 1.85, 0.10) m | forward=1.85 m, side=0.42 m, height=0.10 m, range=1.90 m, v=-0.21 m/s, snr=18, noise=7
-```
-
 ---
 
 ## Parsed Point Format
 
-Each detected point is stored in a format similar to:
+Each detected point is stored in a format similar:
 
 ```python
 {
@@ -271,26 +257,7 @@ Each detected point is stored in a format similar to:
 
 ## Radar Configuration Details
 
-The current configuration has approximately:
-
-```text
-Carrier frequency:        77 GHz
-Ramp slope:               100 MHz/us
-ADC samples:              256
-ADC sampling rate:        7.2 Msps
-Max distance:             8.64 m
-Range resolution:         0.042 m
-Number of TX antennas:    3
-Number of RX antennas:    4
-```
-
-The most important values are:
-
-```text
-Max range:          about 8.64 meters
-Range resolution:   about 4.2 centimeters
-```
-
+The current configuration has approximately is found in config file of "2000039 (TI) xwr1843aop firmware-v03_06_01_00-LTS-1/profile_3d_aop.cfg"
 ---
 
 ## Useful Commands
@@ -334,13 +301,8 @@ Capture raw data:
 sudo timeout 5 cat /dev/ttyXRUSB1 > radar_raw.bin
 ```
 
-Run the parser:
 
-```bash
-python3 parser.py
-```
-
-Run data collection:
+Run data collection (with parsing):
 
 ```bash
 python3 dataCollecter.py
