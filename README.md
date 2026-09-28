@@ -44,7 +44,7 @@ Check the connection using
 ```bash
 nmcli connection show --active
 ```
-
+Should show both an `ap0` device and `wlan0` device. If there's no wlan0 device, connect manually via `sudo nmtui` or `sudo nmcli dev wifi connect <wifi-ssid> password <wifi password>`
 ## Setting up the virtual environment
 To install various packages on the RUBIK Pi, create a virtual environment and install all the packages inside this environment.
 ```bash
