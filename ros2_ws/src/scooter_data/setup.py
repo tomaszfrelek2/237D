@@ -32,6 +32,7 @@ setup(
             'radar = scooter_data.radar:main',
             'servo = scooter_data.servo:main',
             'camera_yolov26_node = scooter_data.camera_yolov26_node:main',
+            'camera_segmentation_node = scooter_data.camera_segmentation_node:main',
         ],
     },
 )

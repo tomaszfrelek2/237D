@@ -32,8 +32,18 @@ class VideoPublisher(Node):
         self.declare_parameter("otopic_video", "/video")
         self.otopic_video = self.get_parameter("otopic_video").value
 
+        # Frames are always read at camera_fps (keeps the UDP buffer empty);
+        # publish_fps sets how many of them are published per second (e.g. 10, 20 or 30).
+        self.declare_parameter("camera_fps", 30.0)
+        self.declare_parameter("publish_fps", 10.0)
+        self.camera_fps = float(self.get_parameter("camera_fps").value)
+        self.publish_fps = float(self.get_parameter("publish_fps").value)
+        if not 0 < self.publish_fps <= self.camera_fps:
+            raise ValueError(f"publish_fps must be between 0 and camera_fps ({self.camera_fps}), "
+                             f"got {self.publish_fps}")
+
         self.STREAM_URLS = [
-            "udp://172.28.114.51:8554",
+            "udp://172.28.114.51:8554?fifo_size=50000000&overrun_nonfatal=1",
             "rtsp://172.28.114.51:8554/live",
             "udp://@:8554",
         ]
@@ -70,13 +80,15 @@ class VideoPublisher(Node):
         self.get_logger().info("VideoPublisher node has successfully started reading frames.")
 
         # Keep polling the buffer rapidly to prevent OpenCV lag
-        time_period = 1.0 / 30.0
-        self.frame_counter = 0
+        time_period = 1.0 / self.camera_fps
+        self.publish_credit = 0.0
         self.timer = self.create_timer(time_period, self.load_video)
+        self.get_logger().info(f"Reading at {self.camera_fps:g} FPS, publishing at {self.publish_fps:g} FPS")
 
     def publish_frames(self, opencv_img):
         """Compresses the raw image into a JPEG and publishes it."""
         img_msg = self.cv_bridge.cv2_to_compressed_imgmsg(opencv_img, dst_format='jpg')
+        img_msg.header.stamp = self.get_clock().now().to_msg()
         self.frame_publisher.publish(img_msg)
 
     def open_stream(self, urls):
@@ -93,7 +105,7 @@ class VideoPublisher(Node):
         return None
 
     def load_video(self):
-        """Reads frames rapidly to prevent lag, but throttles network publishing to 10 Hz."""
+        """Reads frames rapidly to prevent lag, but throttles publishing to publish_fps."""
         if not self.cap or not self.cap.isOpened():
             return
 
@@ -103,11 +115,13 @@ class VideoPublisher(Node):
             self.get_logger().warning("Dropped frame or stream paused.")
             return
 
-        # Throttle: Only publish every 3rd frame to achieve a clean 10 Hz output
-        self.frame_counter += 1
-        if self.frame_counter >= 3:
+        # Throttle: each read frame earns publish_fps "credit"; publish whenever a full
+        # camera_fps worth has built up. 10 of 30 -> every 3rd frame, 20 of 30 -> 2 of every 3,
+        # 30 of 30 -> every frame.
+        self.publish_credit += self.publish_fps
+        if self.publish_credit >= self.camera_fps:
+            self.publish_credit -= self.camera_fps
             self.publish_frames(frame)
-            self.frame_counter = 0
 
     def destroy_node(self):
         """Cleans up the OpenCV object on shutdown."""

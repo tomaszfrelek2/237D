@@ -34,6 +34,9 @@ from std_msgs.msg import Float32
 #YOLO Imports
 from vision_msgs.msg import Detection2DArray
 
+# Semantic segmentation Imports
+from sensor_msgs.msg import Image
+
 
 class BagRecorder(Node):
 
@@ -65,6 +68,9 @@ class BagRecorder(Node):
         self._register_topic(7, '/video/detections', 'vision_msgs/msg/Detection2DArray')
         self._register_topic(8, '/video/yolov26_image/compressed', 'sensor_msgs/msg/CompressedImage')
 
+        self._register_topic(9, '/video/segmentation', 'sensor_msgs/msg/Image')
+        self._register_topic(10, '/video/segmentation_image/compressed', 'sensor_msgs/msg/CompressedImage')
+
         # 2. Create Subscriptions
         self.create_subscription(CompressedImage, '/video/compressed', self._make_callback('/video/compressed'), 10)
         self.create_subscription(RadarScan, '/radar/scan', self._make_callback('/radar/scan'), 10)
@@ -77,6 +83,9 @@ class BagRecorder(Node):
         
         self.create_subscription(Detection2DArray,'/video/detections', self._make_callback('/video/detections'), 10)
         self.create_subscription(CompressedImage,'/video/yolov26_image/compressed', self._make_callback('/video/yolov26_image/compressed'), 10)
+
+        self.create_subscription(Image, '/video/segmentation', self._make_callback('/video/segmentation'), 10)
+        self.create_subscription(CompressedImage, '/video/segmentation_image/compressed', self._make_callback('/video/segmentation_image/compressed'), 10)
         
         self.get_logger().info("All topics registered and subscriptions created. Bag Recorder is now recording...")
         
@@ -109,7 +118,7 @@ def main(args=None):
     parser.add_argument(
         "-n", "--name", 
         type=str, 
-        default="my_default_bag", 
+        default="segment_test_bag", 
         help="The name/URI of the output bag directory."
     )
     

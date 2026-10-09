@@ -7,7 +7,6 @@ import math
 from sensor_msgs.msg import JointState
 from std_msgs.msg import Float32
 
-# Import the class you provided
 from scooter_data.controller import ST3025_Controller
 
 class ServoStatePublisher(Node):
