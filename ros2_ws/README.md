@@ -94,3 +94,16 @@ ros2 launch scooter_data scooterdata_launch.py
 Use `ros2 topic list` to see the `/topics` that are being published the nodes. Run `ros2 run scooter_data bag_recorder` to record the data using ROS2 Bag. ROS2 Bag is a tool for recording and playback of topics published by a ROS2 Node.
 
 To visualise the saved data, run `python3 playback.py --"/path_to_bag" --o "/save_directory"`
+
+
+### Running gstreamer semantic segmentation
+ Run on host (disables firewall for video stream,address may change):`sudo ufw allow from 10.43.0.1/24 to any port 5600 proto udp`
+Run pipeline on pi(address may change) `/usr/bin/python3 ~/237D/ros2_ws/src/scooter_data scooter_data/gst_segmentation.py \ --hw-overlay --stream-host 10.43.0.1 --hw-latency-ms 90`
+
+Record the overlay video on the Pi too: `--record-overlay seg.mkv`
+Also save the raw camera stream: `--record-raw raw.ts`
+Per-frame class coverage log: `--json-dir json_dir/`
+Publish class maps to ROS 2: `--ros`
+Only colour some classes: `--class-ids "Car,Person"`
+
+Run to view on host pc: `gst-launch-1.0 udpsrc port=5600 caps="application/x-rtp,media=video,encoding-name=H264,payload=96" ! rtph264depay ! h264parse ! avdec_h264 ! videoconvert ! autovideosink sync=false`
